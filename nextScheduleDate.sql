@@ -1,7 +1,7 @@
 /* !Код для запуска!
 declare
-	P1 		date := to_date('09/07/10 23:36','DD.MM.YY HH24:MI');
-	P2 		varchar2(128) := '0,45;12;1,2,6;3,6,14,18,21,24,28;1,2,3,4,5,6,7,8,9,10,11,12;';
+	P1 	date := to_date('09/07/10 23:36','DD.MM.YY HH24:MI');
+	P2 	varchar2(128) := '0,45;12;1,2,6;3,6,14,18,21,24,28;1,2,3,4,5,6,7,8,9,10,11,12;';
 	result	date;
 begin
 	result := next_date(P1,P2);
@@ -16,13 +16,13 @@ is
 	listUnitDivider	constant varchar2(1) := ',';
 	
 	--общий тип для единиц времени (ЕВ)
-	i				pls_integer;
+	i			pls_integer;
 	--позиции ЕВ в таблице tUnits
-	idxMin			constant i%type := 1;
-	idxHour			constant i%type := 2;
-	idxWDay			constant i%type := 3;
-	idxDay			constant i%type := 4;
-	idxMonth		constant i%type := 5;
+	idxMin		constant i%type := 1;
+	idxHour		constant i%type := 2;
+	idxWDay		constant i%type := 3;
+	idxDay		constant i%type := 4;
+	idxMonth	constant i%type := 5;
 	
 	type TList is table of varchar2(1) index by i%type;
 	type RUnitTime 
@@ -39,7 +39,7 @@ is
 
 	curYear			i%type;	--год переданной даты
 	resYear			i%type;	--год результирующей даты
-	idx				i%type;	--индекс для циклов
+	idx			i%type;	--индекс для циклов
 	idx2			i%type;	--индекс для вложенных циклов
 	tmpMonth		i%type;	--временая переменная для месяца
 
@@ -52,7 +52,7 @@ is
 		tUnits(idxWDay).curUnit		:= to_char(pDate,'D');		--дни недели
 		tUnits(idxDay).curUnit		:= to_char(pDate,'DD');		--дни
 		tUnits(idxMonth).curUnit	:= to_char(pDate,'MM');		--месяцы
-		curYear 					:= to_char(pDate,'YY');		--год
+		curYear 			:= to_char(pDate,'YY');		--год
 		
 		--пороговые значения для ЕВ, где это возможно
 		tUnits(idxMin).minValue	 := '0';	tUnits(idxMin).maxValue	 := '59';
@@ -65,14 +65,14 @@ is
 	--парсер расписания запусков
 	procedure parseSchedule(pSchedule varchar2) is
 		sSched 		varchar2(128) := pSchedule;	--оставшиеся списки Единиц Времени
-		sListUnit	varchar2(128);				--список разбираемой ЕВ
+		sListUnit	varchar2(128);			--список разбираемой ЕВ
 		pos_TUD		i%type := 0;			--позиция разделителя списков ЕВ
 		pos_LUD		i%type := 0;			--позиция разделителя списка ЕВ
-		idx			i%type := 1;			--индекс для цикла
-		empty_UT    EXCEPTION;
-        num_UT 		EXCEPTION;
+		idx		i%type := 1;			--индекс для цикла
+		empty_UT    	EXCEPTION;
+        	num_UT 		EXCEPTION;
 		
-        PRAGMA exception_init(num_UT, -6502);
+        	PRAGMA exception_init(num_UT, -6502);
 		
 		--проверка результата парсинга
 		procedure checkParseResult is
@@ -117,13 +117,13 @@ is
 		checkParseResult;
 
 		return;
-    exception 
-        when empty_UT then
-            RAISE_APPLICATION_ERROR(-20001, 'В расписании заполнены не все периоды!');
-        when num_UT then
-            RAISE_APPLICATION_ERROR(-20002, 'В расписании указаны ошибочные единицы времени!');
-        when others then
-            RAISE_APPLICATION_ERROR(-20003, 'В расписании указаны неправильные данные!');
+	exception 
+		when empty_UT then
+		    RAISE_APPLICATION_ERROR(-20001, 'В расписании заполнены не все периоды!');
+		when num_UT then
+		    RAISE_APPLICATION_ERROR(-20002, 'В расписании указаны ошибочные единицы времени!');
+		when others then
+		    RAISE_APPLICATION_ERROR(-20003, 'В расписании указаны неправильные данные!');
 	end;
 	
 	--получение ЕВ из расписания следующей за ЕВ из pDate
@@ -179,13 +179,13 @@ is
 		
 		--день подходит - проверяем час.
 		--если час из pDate в расписании отсутсвует, то смотрим наличие в расписании следующего часа. 
-		--	если нет и его - проверка не пройдена, если если есть то устанавливаем значения для результирующей даты
+		--если нет и его - проверка не пройдена, если есть, то устанавливаем значения для результирующей даты
 		if not isExists(idxHour) then
 			idx := getNext(idxHour);
 			if idx is not null then
 				--устанвливаем значения для результирующего времени
 				setResUnit(idxHour,idx);	--час - следующий по расписанию за часом из pDate
-				setResUnit(idxMin);			--минута - первая из расписания
+				setResUnit(idxMin);		--минута - первая из расписания
 				return true;
 			end if;
 
@@ -196,7 +196,7 @@ is
 		idx := getNext(idxMin);
 		if idx is not null then
 			--устанвливаем значения для результирующего времени
-			setResUnit(idxMin,idx);		--минута - следующая по расписанию за минутой из pDate
+			setResUnit(idxMin,idx);	--минута - следующая по расписанию за минутой из pDate
 			return true;
 		end if;
 		--доступных минут в расписании не найдено
@@ -210,11 +210,11 @@ is
 	return date is
 	begin
 		return to_date(	coalesce(pDay,  	tUnits(idxDay).resUnit,  	tUnits(idxDay).curUnit)	 ||'/'||
-						coalesce(pMonth,	tUnits(idxMonth).resUnit,	tUnits(idxMonth).curUnit)||'/'||
-						nvl(				resYear,					curYear)				 ||' '||
-						nvl(				tUnits(idxHour).resUnit,	tUnits(idxHour).curUnit) ||':'||
-						nvl(				tUnits(idxMin).resUnit, 	tUnits(idxMin).curUnit)
-					,'DD/MM/YY HH24:MI');
+				coalesce(pMonth,	tUnits(idxMonth).resUnit,	tUnits(idxMonth).curUnit)||'/'||
+				nvl(			resYear,			curYear)		 ||' '||
+				nvl(			tUnits(idxHour).resUnit,	tUnits(idxHour).curUnit) ||':'||
+				nvl(			tUnits(idxMin).resUnit, 	tUnits(idxMin).curUnit)
+				,'DD/MM/YY HH24:MI');
 	end;
 
 	--получение дня недели запрошенного дня (и проверка на его существование)
@@ -247,7 +247,7 @@ begin
 					--устанвливаем значения для результирующей даты
 					setResUnit(idxDay,idx); --день расписания, следующий за днем из pDate
 					setResUnit(idxHour);	--час первый в расписании
-					setResUnit(idxMin);		--минута первая в расписании
+					setResUnit(idxMin);	--минута первая в расписании
 					return dateConstuctor;	--возвращаем дату, собранную из расчитанных значений
 				end if;
 			end if;
@@ -273,7 +273,7 @@ begin
 					setResUnit(idxMonth,idx);--найденный месяц расписания
 					setResUnit(idxDay,idx2); --найденный день расписания
 					setResUnit(idxHour);	 --час первый в расписании
-					setResUnit(idxMin);		 --минута первая в расписании
+					setResUnit(idxMin);	 --минута первая в расписании
 					return dateConstuctor;	 --возвращаем дату, собранную из расчитанных значений
 				end if;
 				idx2 := tUnits(idxDay).listUnit.next(idx2);
@@ -289,4 +289,4 @@ begin
 			return null;
 		end if;
 	end loop;
-end; 
+end;
